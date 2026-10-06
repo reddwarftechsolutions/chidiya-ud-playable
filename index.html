@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Chidiya Ud — Reflex Survival</title>
+<style>
+:root{
+  --bg:#090b12;
+  --panel:#111522;
+  --panel2:#181d2c;
+  --text:#f8fbff;
+  --muted:#9ba6bb;
+  --accent:#ffb703;
+  --good:#39e58c;
+  --bad:#ff4d6d;
+  --cyan:#55d6ff;
+  --line:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -10%,#242a45 0,#0b0d16 42%,#07080d 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{overflow-x:hidden}
+button,input{font:inherit}
+button{touch-action:manipulation}
+.app{width:min(980px,100%);margin:auto;padding:14px 12px 24px}
+.top{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px
+}
+.logo{
+  width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#262d46,#131827);border:1px solid var(--line);font-size:28px;
+  box-shadow:0 12px 32px rgba(0,0,0,.25)
+}
+.brand{display:flex;align-items:center;gap:10px}
+h1{font-size:clamp(24px,6vw,38px);line-height:1;margin:0}
+.sub{color:var(--muted);font-size:12px;margin-top:5px}
+.topBadge{
+  padding:8px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px;background:rgba(255,255,255,.03)
+}
+.screen{display:none}.screen.active{display:block}
+
+.setup{
+  display:grid;grid-template-columns:1.2fr .8fr;gap:14px
+}
+.card{
+  background:linear-gradient(180deg,rgba(23,28,43,.96),rgba(12,16,25,.96));
+  border:1px solid var(--line);border-radius:24px;box-shadow:0 18px 65px rgba(0,0,0,.22)
+}
+.hero{padding:24px}
+.hero h2{font-size:clamp(34px,9vw,66px);letter-spacing:-.05em;line-height:.95;margin:0 0 14px}
+.hero p{color:var(--muted);line-height:1.65;margin:0 0 18px}
+.rules{display:flex;flex-wrap:wrap;gap:8px}
+.rule{padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:12px}
+.form{padding:20px;display:grid;gap:13px}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+input,select{
+  width:100%;background:#0e1320;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:12px;outline:none
+}
+.btn{
+  border:0;border-radius:14px;padding:13px 16px;font-weight:900;cursor:pointer
+}
+.primary{background:linear-gradient(135deg,#ffca43,#ff9f1c);color:#191307;box-shadow:0 12px 28px rgba(255,183,3,.18)}
+.secondary{background:#111725;color:#dce3f0;border:1px solid var(--line)}
+
+.gameHead{
+  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-bottom:10px
+}
+.stat{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);padding:8px 11px;border-radius:14px;min-width:88px
+}
+.stat small{color:var(--muted);display:block;font-size:10px}.stat b{font-size:19px}
+.progressWrap{position:relative}
+.progress{
+  height:9px;background:#161b2a;border-radius:99px;overflow:hidden;border:1px solid var(--line)
+}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--accent));transition:width .1s linear}
+.speedText{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
+
+.arena{
+  position:relative;overflow:hidden;padding:14px
+}
+.callCard{
+  min-height:350px;border-radius:22px;display:grid;place-items:center;text-align:center;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(85,214,255,.09),transparent 30%),
+    linear-gradient(180deg,#171c2d,#0d111a);
+  border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden
+}
+.callCard::before{
+  content:"";position:absolute;inset:-30%;background:conic-gradient(from 0deg,transparent 0deg,rgba(255,255,255,.03) 70deg,transparent 140deg);
+  animation:spin 7s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.center{position:relative;z-index:1;width:100%;padding:18px}
+.level{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.bigEmoji{font-size:clamp(70px,18vw,150px);line-height:1;margin:8px 0}
+.object{font-size:clamp(36px,10vw,72px);font-weight:950;letter-spacing:-.06em}
+.object.fly{color:var(--good);text-shadow:0 0 26px rgba(57,229,140,.15)}
+.object.no{color:#ff6d86;text-shadow:0 0 26px rgba(255,77,109,.15)}
+.subtitle{margin-top:7px;color:var(--muted);font-size:13px}
+.timerRing{
+  width:86px;height:86px;border-radius:50%;margin:16px auto 0;position:relative;display:grid;place-items:center;
+  background:conic-gradient(var(--accent) 0deg,var(--accent) 360deg,#252b3c 360deg)
+}
+.timerRing::after{content:"";position:absolute;inset:7px;border-radius:50%;background:#111623}
+.timerRing span{position:relative;z-index:1;font-size:22px;font-weight:950}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:#fff}
+.flash.good{animation:flashGood .18s}.flash.bad{animation:flashBad .28s}
+@keyframes flashGood{0%{opacity:.06}100%{opacity:0}}
+@keyframes flashBad{0%{opacity:.16;background:#ff4d6d}100%{opacity:0}}
+.wobble{animation:wobble .28s}
+@keyframes wobble{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+.tapZone{
+  margin-top:12px;min-height:120px;border-radius:22px;border:2px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg,#1a2031,#111624);display:grid;place-items:center;text-align:center;
+  user-select:none;cursor:pointer;transition:.08s transform,.12s border-color,.12s background
+}
+.tapZone:active{transform:scale(.985)}
+.tapZone.ready{border-color:rgba(85,214,255,.35)}
+.tapZone.good{border-color:rgba(57,229,140,.85);background:linear-gradient(180deg,#162d27,#10211c)}
+.tapZone.bad{border-color:rgba(255,77,109,.95);background:linear-gradient(180deg,#311820,#1b1014)}
+.tapTitle{font-size:22px;font-weight:950;letter-spacing:-.03em}
+.tapSub{color:var(--muted);font-size:12px;margin-top:4px}
+
+.hud{
+  display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px;margin-top:10px
+}
+.hudCard{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:18px;padding:11px
+}
+.hudTop{display:flex;justify-content:space-between;align-items:center}
+.hudLabel{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.11em}
+.hudValue{font-size:17px;font-weight:950}
+.hearts{display:flex;gap:4px;font-size:18px}
+.combo{font-size:24px;font-weight:950}
+.statusLine{font-size:12px;color:var(--muted);min-height:18px;margin-top:8px}
+.actions{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+.overlay{
+  position:fixed;inset:0;display:none;place-items:center;padding:15px;background:rgba(2,5,10,.76);z-index:10
+}
+.overlay.show{display:grid}
+.modal{
+  width:min(560px,100%);padding:25px;border-radius:24px;background:linear-gradient(180deg,#171d2d,#0c111b);border:1px solid var(--line);text-align:center;box-shadow:0 28px 100px rgba(0,0,0,.5)
+}
+.modalEmoji{font-size:72px}.modal h3{margin:7px 0;font-size:31px}.modal p{color:var(--muted)}
+.statsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.finalStat{padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.finalStat small{display:block;color:var(--muted);font-size:10px}.finalStat b{font-size:20px}
+
+@media(max-width:820px){
+  .setup{grid-template-columns:1fr}
+  .tapZone{min-height:145px}
+}
+@media(max-width:560px){
+  .app{padding:10px 9px 20px}
+  .topBadge{display:none}
+  .hero,.form{padding:17px}
+  .gameHead{grid-template-columns:auto 1fr auto}
+  .callCard{min-height:310px}
+  .hud{grid-template-columns:1fr 1fr}
+  .hudCard:first-child{grid-column:1/-1}
+  .statsGrid{grid-template-columns:1fr 1fr}
+  .tapZone{min-height:135px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">🐦</div>
+      <div>
+        <h1>Chidiya Ud!</h1>
+        <div class="sub">Reflex Survival • Tap fast or lose health</div>
+      </div>
+    </div>
+    <div class="topBadge">Single Player</div>
+  </div>
+
+  <section id="setup" class="screen active">
+    <div class="setup">
+      <div class="card hero">
+        <h2>Ab asli challenge. ⚡</h2>
+        <p>
+          Computer cheez ka naam bolega. <b>Jo ud sakti hai us par TAP karo.</b>
+          Timer khatam hone se pehle tap nahi kiya to health lose.
+          Jo nahi udti us par tap kiya to bhi health lose.
+        </p>
+        <div class="rules">
+          <div class="rule">🐦 CHIDIYA → TAP</div>
+          <div class="rule">✈️ PLANE → TAP</div>
+          <div class="rule">🐘 HATHI → DON'T</div>
+          <div class="rule">🐟 MACHHLI → DON'T</div>
+        </div>
+        <div style="height:1px;background:var(--line);margin:18px 0"></div>
+        <div class="sub">
+          <b style="color:#fff">Level Up:</b> streak badhao → health max increase → timer aur chhota → reflex test harder.
+        </div>
+      </div>
+
+      <div class="card form">
+        <div>
+          <label>Your Name</label>
+          <input id="name" maxlength="18" value="Player" placeholder="Player">
+        </div>
+        <div>
+          <label>Starting Difficulty</label>
+          <select id="difficulty">
+            <option value="easy">Warm Up — relaxed</option>
+            <option value="normal" selected>Normal — intense</option>
+            <option value="hard">Hard — no mercy</option>
+          </select>
+        </div>
+        <button id="start" class="btn primary">Start Survival 🔥</button>
+        <div style="color:var(--muted);font-size:12px;line-height:1.5">
+          Sound + voice browser/device ke available features par depend karega.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="gameHead">
+      <div class="stat"><small>LEVEL</small><b id="level">1</b></div>
+      <div>
+        <div class="progress"><i id="levelBar"></i></div>
+        <div id="speedText" class="speedText">Speed 1.00×</div>
+      </div>
+      <div class="stat"><small>SCORE</small><b id="score">0</b></div>
+    </div>
+
+    <div class="card arena">
+      <div id="callCard" class="callCard">
+        <div class="center">
+          <div class="level">Listen</div>
+          <div id="emoji" class="bigEmoji">👂</div>
+          <div id="object" class="object">READY?</div>
+          <div id="subtitle" class="subtitle">Computer is about to call…</div>
+          <div id="timerRing" class="timerRing"><span id="timerText">—</span></div>
+        </div>
+        <div id="flash" class="flash"></div>
+      </div>
+
+      <div id="tapZone" class="tapZone ready">
+        <div>
+          <div id="tapTitle" class="tapTitle">TAP HERE 👆</div>
+          <div id="tapSub" class="tapSub">Tap only when the object can fly.</div>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="hudCard">
+          <div class="hudTop">
+            <div>
+              <div class="hudLabel">Health</div>
+              <div id="health" class="hearts"></div>
+            </div>
+            <div style="text-align:right">
+              <div class="hudLabel">Misses</div>
+              <div id="misses" class="hudValue">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="hudCard">
+          <div class="hudLabel">Combo</div>
+          <div id="combo" class="combo">x0</div>
+          <div id="comboText" class="statusLine">Build a streak.</div>
+        </div>
+        <div class="hudCard">
+          <div class="hudLabel">Next Upgrade</div>
+          <div id="upgrade" class="hudValue">3 good</div>
+          <div id="upgradeText" class="statusLine">Health can grow.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="pause" class="btn secondary">Pause</button>
+        <button id="quit" class="btn secondary">Quit</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="overlay" class="overlay">
+  <div class="modal">
+    <div id="modalEmoji" class="modalEmoji">💀</div>
+    <h3 id="resultTitle">Game Over</h3>
+    <p id="resultText">The flock got you.</p>
+    <div class="statsGrid">
+      <div class="finalStat"><small>SCORE</small><b id="finalScore">0</b></div>
+      <div class="finalStat"><small>LEVEL</small><b id="finalLevel">1</b></div>
+      <div class="finalStat"><small>BEST COMBO</small><b id="finalCombo">0</b></div>
+    </div>
+    <div class="actions">
+      <button id="again" class="btn primary">Play Again</button>
+      <button id="home" class="btn secondary">Setup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const things = [
+    ["chidiya","🐦",true],["kabootar","🕊️",true],["tota","🦜",true],["kawwa","🐦‍⬛",true],
+    ["titli","🦋",true],["makhi","🪰",true],["machhar","🦟",true],["plane","✈️",true],
+    ["helicopter","🚁",true],["rocket","🚀",true],["patang","🪁",true],["dragon","🐉",true],
+    ["hathi","🐘",false],["ghoda","🐎",false],["kutta","🐕",false],["billi","🐈",false],
+    ["sher","🦁",false],["bandar","🐒",false],["gaay","🐄",false],["bakri","🐐",false],
+    ["machhli","🐟",false],["kachhua","🐢",false],["bus","🚌",false],["car","🚗",false],
+    ["cycle","🚲",false],["truck","🚚",false]
+  ];
+
+  const $=id=>document.getElementById(id);
+  const cfg={
+    easy:{start:2100,min:850,step:85,levelEvery:4,maxHealth:5},
+    normal:{start:1750,min:620,step:105,levelEvery:4,maxHealth:6},
+    hard:{start:1500,min:480,step:125,levelEvery:3,maxHealth:7}
+  };
+  const state={
+    player:"Player",difficulty:"normal",active:false,paused:false,
+    level:1,score:0,combo:0,bestCombo:0,good:0,misses:0,health:3,maxHealth:3,
+    current:null,round:0,timeLeft:0,timeLimit:0,raf:0,nextTimer:0,lastTs:0
+  };
+
+  function speak(text){
+    if(!("speechSynthesis" in window)) return;
+    try{
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text+" ud!");
+      u.lang="hi-IN";u.rate=state.difficulty==="hard"?1.03:0.94;u.pitch=1.03;
+      const voices=speechSynthesis.getVoices();
+      const hi=voices.find(v=>/^hi[-_]IN/i.test(v.lang))||voices.find(v=>/hindi/i.test(v.name));
+      if(hi)u.voice=hi;
+      speechSynthesis.speak(u);
+    }catch(_){}
+  }
+
+  function pick(){
+    let x; do{x=things[Math.floor(Math.random()*things.length)]}while(state.current&&x[0]===state.current[0]);
+    return {name:x[0],emoji:x[1],fly:x[2]};
+  }
+
+  function start(){
+    state.player=$("name").value.trim()||"Player";
+    state.difficulty=$("difficulty").value;
+    const c=cfg[state.difficulty];
+    state.level=1;state.score=0;state.combo=0;state.bestCombo=0;state.good=0;state.misses=0;
+    state.maxHealth=3;state.health=3;state.active=true;state.paused=false;state.current=null;state.round=0;
+    $("setup").classList.remove("active");$("game").classList.add("active");
+    $("pause").textContent="Pause";
+    renderHUD();
+    nextRound(600);
+  }
+
+  function nextRound(delay=0){
+    clearTimeout(state.nextTimer);
+    state.nextTimer=setTimeout(()=>{
+      if(!state.active||state.paused)return;
+      state.round++;
+      state.current=pick();
+      state.timeLimit=timerForLevel();
+      state.timeLeft=state.timeLimit;
+      $("emoji").textContent=state.current.emoji;
+      $("object").textContent=state.current.name.toUpperCase()+"!";
+      $("object").className="object "+(state.current.fly?"fly":"no");
+      $("subtitle").textContent=state.current.fly?"TAP BEFORE TIME RUNS OUT":"DO NOT TAP • WAIT IT OUT";
+      $("tapTitle").textContent=state.current.fly?"TAP NOW 👆":"HOLD";
+      $("tapSub").textContent=state.current.fly?"One tap = survival":"Don't touch the pad.";
+      $("tapZone").className="tapZone ready";
+      speak(state.current.name);
+      updateTimer(state.timeLeft);
+      state.lastTs=performance.now();
+      cancelAnimationFrame(state.raf);
+      state.raf=requestAnimationFrame(loop);
+    },delay);
+  }
+
+  function timerForLevel(){
+    const c=cfg[state.difficulty];
+    return Math.max(c.min,c.start-(state.level-1)*c.step);
+  }
+
+  function loop(ts){
+    if(!state.active||state.paused)return;
+    const dt=ts-state.lastTs;state.lastTs=ts;
+    state.timeLeft-=dt;
+    updateTimer(state.timeLeft);
+    if(state.timeLeft<=0){resolveMiss();return}
+    state.raf=requestAnimationFrame(loop);
+  }
+
+  function updateTimer(ms){
+    const pct=Math.max(0,Math.min(1,ms/state.timeLimit));
+    const deg=Math.round(pct*360);
+    $("timerRing").style.background=`conic-gradient(${pct<.28?"var(--bad)":"var(--accent)"} 0deg ${deg}deg,#252b3c ${deg}deg 360deg)`;
+    $("timerText").textContent=(ms/1000).toFixed(2);
+    const speed=state.timeLimit?1750/state.timeLimit:1;
+    $("speedText").textContent=`Speed ${speed.toFixed(2)}×`;
+  }
+
+  function tap(){
+    if(!state.active||state.paused||!state.current)return;
+    if(state.current.fly) resolveGood();
+    else loseLife("Wrong tap!");
+  }
+
+  function resolveGood(){
+    cancelAnimationFrame(state.raf);
+    state.good++;state.combo++;state.bestCombo=Math.max(state.bestCombo,state.combo);
+    const comboBonus=Math.min(50,state.combo*2);
+    state.score+=10+comboBonus;
+    flash("good");
+    $("tapZone").className="tapZone good";
+    $("subtitle").textContent=`NICE! +${10+comboBonus}`;
+    maybeLevelUp();
+    renderHUD();
+    beep(720,0.07);
+    nextRound(cfg[state.difficulty].start>1600?160:110);
+  }
+
+  function resolveMiss(){
+    cancelAnimationFrame(state.raf);
+    if(state.current && state.current.fly) loseLife("Too slow!");
+    else {
+      state.good++;
+      state.combo++;
+      state.bestCombo=Math.max(state.bestCombo,state.combo);
+      state.score+=5+Math.min(30,state.combo);
+      $("subtitle").textContent="Perfect hold. 😈";
+      flash("good");beep(520,0.05);
+      maybeLevelUp();renderHUD();nextRound(110);
+    }
+  }
+
+  function loseLife(reason){
+    cancelAnimationFrame(state.raf);
+    state.health--;state.misses++;state.combo=0;
+    flash("bad");beep(150,0.13);
+    $("tapZone").className="tapZone bad";
+    $("subtitle").textContent=`${reason}  •  -1 HP`;
+    $("callCard").classList.remove("wobble");void $("callCard").offsetWidth;$("callCard").classList.add("wobble");
+    renderHUD();
+    if(state.health<=0){gameOver(reason);return}
+    nextRound(420);
+  }
+
+  function maybeLevelUp(){
+    const c=cfg[state.difficulty];
+    if(state.good>0 && state.good%c.levelEvery===0){
+      state.level++;
+      const oldMax=state.maxHealth;
+      state.maxHealth=Math.min(c.maxHealth,3+Math.floor((state.level-1)/2));
+      if(state.maxHealth>oldMax)state.health=Math.min(state.maxHealth,state.health+2);
+      else state.health=Math.min(state.maxHealth,state.health+1);
+      flash("good");
+      $("comboText").textContent=`LEVEL UP! ${state.level} 🔥`;
+      beep(900,0.12);
+    }
+  }
+
+  function renderHUD(){
+    $("level").textContent=state.level;
+    $("score").textContent=state.score;
+    $("combo").textContent=`x${state.combo}`;
+    $("misses").textContent=state.misses;
+    $("health").innerHTML="";
+    for(let i=0;i<state.maxHealth;i++)$("health").innerHTML+=`<span style="opacity:${i<state.health?1:.15}">❤</span>`;
+    const c=cfg[state.difficulty];
+    const currentProgress=state.good%c.levelEvery;
+    $("levelBar").style.width=`${currentProgress/c.levelEvery*100}%`;
+    const need=c.levelEvery-currentProgress;
+    $("upgrade").textContent=state.maxHealth>=c.maxHealth?"MAX HP":`${need} good`;
+    $("upgradeText").textContent=state.maxHealth>=c.maxHealth?"Speed keeps rising.":"Next level boosts pressure.";
+    if(state.combo>=8)$("comboText").textContent="ON FIRE 🔥";
+    else if(state.combo>=4)$("comboText").textContent="Nice streak!";
+    else $("comboText").textContent="Build a streak.";
+  }
+
+  function flash(kind){
+    const f=$("flash");f.className="flash";void f.offsetWidth;f.className="flash "+kind;
+  }
+
+  function gameOver(reason){
+    state.active=false;cancelAnimationFrame(state.raf);clearTimeout(state.nextTimer);
+    if("speechSynthesis"in window)speechSynthesis.cancel();
+    $("modalEmoji").textContent=reason==="Too slow!"?"⏱️":"💀";
+    $("resultTitle").textContent=`${state.player}, game over`;
+    $("resultText").textContent=`${reason} Your reflex run ended at level ${state.level}.`;
+    $("finalScore").textContent=state.score;
+    $("finalLevel").textContent=state.level;
+    $("finalCombo").textContent=state.bestCombo;
+    $("overlay").classList.add("show");
+  }
+
+  function pause(){
+    if(!state.active)return;
+    state.paused=!state.paused;
+    $("pause").textContent=state.paused?"Resume":"Pause";
+    if("speechSynthesis"in window){
+      if(state.paused)speechSynthesis.pause();else speechSynthesis.resume();
+    }
+    if(!state.paused){state.lastTs=performance.now();state.raf=requestAnimationFrame(loop)}
+  }
+
+  function quit(){
+    state.active=false;cancelAnimationFrame(state.raf);clearTimeout(state.nextTimer);
+    if("speechSynthesis"in window)speechSynthesis.cancel();
+    $("overlay").classList.remove("show");$("game").classList.remove("active");$("setup").classList.add("active");
+  }
+
+  function beep(freq,duration){
+    try{
+      const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
+      const c=new C,o=c.createOscillator(),g=c.createGain();
+      o.type="sine";o.frequency.value=freq;g.gain.value=.045;o.connect(g);g.connect(c.destination);o.start();
+      setTimeout(()=>{g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+duration);o.stop(c.currentTime+duration)},5);
+    }catch(_){}
+  }
+
+  $("start").addEventListener("click",start);
+  $("tapZone").addEventListener("pointerdown",e=>{e.preventDefault();tap()});
+  $("pause").addEventListener("click",pause);
+  $("quit").addEventListener("click",quit);
+  $("again").addEventListener("click",()=>{$("overlay").classList.remove("show");start()});
+  $("home").addEventListener("click",quit);
+})();
+</script>
+</body>
+</html>
